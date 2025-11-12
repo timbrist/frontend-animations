@@ -106,8 +106,7 @@
 
     // Entrance timeline
     const tl = gsap.timeline({ 
-      defaults:{ ease:'power3.out' }, 
-      onComplete(){ sessionStorage.setItem('heroPlayed','1'); } 
+      defaults:{ ease:'power3.out' }
     });
 
     // mask text & group
@@ -115,12 +114,12 @@
     const maskGroup = document.getElementById('maskGroup');
 
       // 起始状态：文字极小，几乎看不见背景图（完全被黑色遮盖）
-      gsap.set(maskGroup, { scale: 0.75, transformOrigin:'50% 50%' });
+      gsap.set(maskGroup, { scale: 0.75, transformOrigin:'52% 50%' });
       gsap.set(maskText, { opacity: 1 });
 
       // 2.5秒后，文字从极小不断放大，背景图片逐渐显示
       tl.to(maskGroup, { 
-          scale: 10,  // 放大到很大，让整个背景都显示出来
+          scale: 50,  // 放大到很大，让整个背景都显示出来
           duration: 3.5, 
           ease: 'power2.inOut',
           delay: 2.5  // 等待2.5秒后开始放大
