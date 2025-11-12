@@ -52,12 +52,11 @@
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,.12);
     transform-origin: center;
-    transition: transform .24s ease, box-shadow .24s ease;
   }
   .grid-collage figure:hover{
     z-index: 2;
-    transform: translateY(-2px) scale(1.02);
     box-shadow: 0 16px 40px rgba(0,0,0,.18);
+    transition: box-shadow .24s ease;
   }
   .grid-collage img{
     width: 100%;
@@ -78,26 +77,69 @@
   }
 
   /* 不对称布局（可按自己图片比例微调 span） */
-  .a{ grid-column: 1 /  5;  grid-row: 3 /  7; }
+  .pos-a{ grid-column: 1 /  5;  grid-row: 3 /  7; }
+  .pos-b{ grid-column: 9 /  13;  grid-row: 2 /  6; }
+  .pos-c{ grid-column: 5 /  9;  grid-row: 1 /  12; }
+  .pos-d{ grid-column: 3 /  7;  grid-row: 10 /  14; }
+  .pos-e{ grid-column: 8 /  12;  grid-row: 10 /  14; }
 
-  .b{ grid-column: 9 /  12;  grid-row: 2 /  6;  transform: rotate(-1.2deg); }
+  /* GSAP 动画会控制这些元素 */
+  .grid-collage figure{
+    will-change: transform, opacity;
+    cursor: pointer;
+    transition: box-shadow .3s ease;
+  }
 
-  .c{ grid-column: 5 /  9;  grid-row: 1 /  12; }
+  /* 中心位置标识 */
+  .grid-collage figure.is-center{
+    z-index: 3;
+  }
+  
+  .grid-collage figure.is-center::after{
+    content: '★';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    animation: starPulse 2s ease-in-out infinite;
+    z-index: 10;
+  }
 
-  .d{ grid-column: 3 /  7;  grid-row: 10 /  14; transform: rotate(1.1deg) translateY(2px); }
-  .e{ grid-column: 8 /  12;  grid-row: 10 /  14; }
+  @keyframes starPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(15deg); opacity: 0.8; }
+  }
+
+
+  .image-info {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .image-info h1 {
+    margin: 0 0 12px;
+    font-weight: 600;
+    font-size: clamp(20px, 3vw, 28px);
+  }
+  
+  .image-info p.tip {
+    margin: 0;
+    color: #666;
+    line-height: 1.6;
+  }
 
   /* 移动端：两列堆叠，仍保持高低错落 */
   @media (max-width: 640px){
-    :root{ --g: 12px; --row: 36px; }
     .grid-collage{
       grid-template-columns: 1fr 1fr;
     }
-    .a{ grid-column: 1 / span 2; grid-row: span 10; transform: none; }
-    .b{ grid-column: 1 / span 2; grid-row: span 8;  transform: none; }
-    .c{ grid-column: 1 / span 2; grid-row: span 9;  }
-    .d{ grid-column: 1 / span 2; grid-row: span 7;  transform: none; }
-    .e{ grid-column: 1 / span 2; grid-row: span 8;  }
+    .pos-a{ grid-column: 1 / span 2; grid-row: span 10; }
+    .pos-b{ grid-column: 1 / span 2; grid-row: span 8; }
+    .pos-c{ grid-column: 1 / span 2; grid-row: span 12; }
+    .pos-d{ grid-column: 1 / span 2; grid-row: span 7; }
+    .pos-e{ grid-column: 1 / span 2; grid-row: span 8; }
   }
 
   /* 可选：想强制固定画幅时，给某些项加 aspect-ratio
@@ -106,41 +148,167 @@
 </head>
 <body>
     <section class="section--a" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 4rem 6vw;"> <h1>1st Screen Section</h1></section>    
-  <div class="wrap">
+  
+    <div class="wrap">
 
     <div class="grid-collage">
-      <figure class="a">
-        <img src="https://picsum.photos/id/1015/800/1200" alt="a">
+      <figure class="pos-a" data-id="mountain" data-name="Mountain" data-desc="壮丽的山峰景色，白雪覆盖的山顶在阳光下闪耀">
+        <img src="https://picsum.photos/id/1015/800/1200" alt="mountain">
         <figcaption>Mountain</figcaption>
       </figure>
-      <figure class="b">
-        <img src="https://picsum.photos/id/1025/1200/800" alt="b">
+      <figure class="pos-b" data-id="dog" data-name="Dog" data-desc="可爱的小狗正在草地上玩耍，享受着温暖的阳光">
+        <img src="https://picsum.photos/id/1025/1200/800" alt="dog">
         <figcaption>Dog</figcaption>
       </figure>
-      <figure class="c">
-        <img src="https://picsum.photos/id/1003/1000/1200" alt="c">
+      <figure class="pos-c is-center" data-id="bridge" data-name="Bridge" data-desc="古老的木桥横跨河流，连接着两岸的美丽风景">
+        <img src="https://picsum.photos/id/1003/1000/1200" alt="bridge">
         <figcaption>Bridge</figcaption>
       </figure>
-      <figure class="d">
-        <img src="https://picsum.photos/id/1035/1200/900" alt="d">
+      <figure class="pos-d" data-id="field" data-name="Field" data-desc="金色的麦田在微风中摇曳，展现着丰收的喜悦">
+        <img src="https://picsum.photos/id/1035/1200/900" alt="field">
         <figcaption>Field</figcaption>
       </figure>
-      <figure class="e">
-        <img src="https://picsum.photos/id/1041/1100/900" alt="e">
+      <figure class="pos-e" data-id="sea" data-name="Sea" data-desc="蔚蓝的大海与天空相接，海浪轻拍着沙滩">
+        <img src="https://picsum.photos/id/1041/1100/900" alt="sea">
         <figcaption>Sea</figcaption>
       </figure>
     </div>
 
     <div class="image-info" style="margin-top: 64px;">
-        <h1>Current Image Name</h1>
-        <p class="tip">
-            lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-        </p>
+        <h1>Current Image: <span id="image-name">Bridge</span></h1>
+        <p class="tip" id="image-desc">古老的木桥横跨河流，连接着两岸的美丽风景</p>
     </div>
 </div>
 
   </div>
 
   <section class="section--a" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 4rem 6vw;"> <h1>3rd Screen Section</h1></section>    
+
+<!-- GSAP 核心库 -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<!-- GSAP ScrollTrigger 插件 -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- GSAP Flip 插件 -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
+
+<script>
+  // 注册 GSAP 插件
+  gsap.registerPlugin(ScrollTrigger, Flip);
+
+  // 等待 DOM 加载完成
+  document.addEventListener('DOMContentLoaded', function() {
+    const wrap = document.querySelector('.wrap');
+    const allFigures = document.querySelectorAll('.grid-collage figure');
+    const imageNameEl = document.getElementById('image-name');
+    const imageDescEl = document.getElementById('image-desc');
+    
+    // 获取位置类名的映射
+    const getPositionClass = (figure) => {
+      const classes = Array.from(figure.classList);
+      return classes.find(cls => cls.startsWith('pos-'));
+    };
+
+    // 当前中心图片
+    let currentCenterFigure = document.querySelector('.is-center');
+    let isAnimating = false;
+
+    // 初始化：根据位置设置不同的初始动画状态
+    allFigures.forEach(figure => {
+      const posClass = getPositionClass(figure);
+      
+      if (posClass === 'pos-a') {
+        gsap.set(figure, { x: '-120%', y: '-20%', rotation: -15, opacity: 0, scale: 0.8 });
+      } else if (posClass === 'pos-b') {
+        gsap.set(figure, { x: '120%', y: '-20%', rotation: 15, opacity: 0, scale: 0.8 });
+      } else if (posClass === 'pos-c') {
+        gsap.set(figure, { y: '-50%', scale: 0.7, opacity: 0, rotation: 0 });
+      } else if (posClass === 'pos-d') {
+        gsap.set(figure, { x: '-100%', y: '50%', rotation: -12, opacity: 0, scale: 0.8 });
+      } else if (posClass === 'pos-e') {
+        gsap.set(figure, { x: '100%', y: '50%', rotation: 12, opacity: 0, scale: 0.8 });
+      }
+    });
+
+    // 创建滚动动画时间线
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrap,
+        start: 'top 80%',
+        end: 'top 20%',
+        scrub: 1.2,
+        // markers: true,
+      }
+    });
+
+    // 为每个图片添加滚动动画
+    allFigures.forEach((figure, index) => {
+      tl.to(figure, {
+        x: '0%',
+        y: '0%',
+        rotation: 0,
+        opacity: 1,
+        scale: 1,
+        ease: 'power2.out',
+        duration: 1
+      }, index * 0.1);
+    });
+
+    // 更新图片信息
+    function updateImageInfo(figure) {
+      const name = figure.dataset.name;
+      const desc = figure.dataset.desc;
+      
+      // 直接更新文本内容
+      imageNameEl.textContent = name;
+      imageDescEl.textContent = desc;
+    }
+
+    // 点击切换功能
+    allFigures.forEach(figure => {
+      figure.addEventListener('click', function() {
+        // 如果点击的是当前中心图片，或正在动画中，则不执行
+        if (figure === currentCenterFigure || isAnimating) return;
+
+        isAnimating = true;
+
+        // 使用 Flip 插件记录当前状态
+        const state = Flip.getState(allFigures);
+
+        // 获取两个元素的位置类
+        const clickedPosClass = getPositionClass(figure);
+        const centerPosClass = getPositionClass(currentCenterFigure);
+
+        // 交换位置类
+        figure.classList.remove(clickedPosClass);
+        figure.classList.add(centerPosClass);
+        
+        currentCenterFigure.classList.remove(centerPosClass);
+        currentCenterFigure.classList.add(clickedPosClass);
+
+        // 交换中心标识
+        currentCenterFigure.classList.remove('is-center');
+        figure.classList.add('is-center');
+
+        // 使用 Flip 插件创建平滑过渡
+        Flip.from(state, {
+          duration: 0.8,
+          ease: 'power3.inOut',
+        //   absolute: true,
+          onComplete: () => {
+            isAnimating = false;
+          }
+        });
+
+        // 更新当前中心图片引用
+        currentCenterFigure = figure;
+
+        // 更新图片信息
+        updateImageInfo(figure);
+      });
+
+     
+    });
+  });
+</script>
 </body>
 </html>
