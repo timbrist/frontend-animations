@@ -1,319 +1,123 @@
-
-
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>CSS Grid 拼贴 Demo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grid Collage Animation</title>
 <style>
+  /* The basic style, you know set the background and text color etc.*/
+  *{box-sizing:border-box}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:#fafafa;color:#222}
+  .wrap{max-width:1000px;margin:40px auto;padding:0 20px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  h1{font-weight:600;font-size:clamp(20px,3vw,28px);margin:0 0 12px}
+  p.tip{margin:0;color:#666;line-height:1.6}
 
-  * { box-sizing: border-box; }
-  body{
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: #fafafa;
-    color: #222;
-  }
-  .wrap{
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 0 20px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  h1{
-    font-weight: 600;
-    font-size: clamp(20px, 3vw, 28px);
-    margin: 0 0 12px;
-  }
-  p.tip{
-    margin: 0 0 24px;
-    color: #666;
-    line-height: 1.6;
-  }
-
-  /* === 拼贴网格 === */
+  /* set the column number and it effects on the layout of the images */
   .grid-collage{
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: 32px;
-    gap: 8px;
-  }
-  .grid-collage figure{
-    margin: 0;
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.12);
-    transform-origin: center;
-  }
-  .grid-collage figure:hover{
-    z-index: 2;
-    box-shadow: 0 16px 40px rgba(0,0,0,.18);
-    transition: box-shadow .24s ease;
-  }
-  .grid-collage img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .grid-collage figcaption{
-    position: absolute;
-    left: 10px; bottom: 10px;
-    padding: 6px 10px;
-    font-size: 12px;
-    line-height: 1;
-    color: #fff;
-    background: rgba(0,0,0,.45);
-    border-radius: 999px;
-    user-select: none;
-  }
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    grid-auto-rows:32px;
+    gap:8px
+   }
 
-  /* 不对称布局（可按自己图片比例微调 span） */
-  .pos-a{ grid-column: 2 /  5;  grid-row: 3 /  7; }
-  .pos-b{ grid-column: 9 /  11;  grid-row: 2 /  7; }
-  .pos-c{ grid-column: 5 /  9;  grid-row: 1 /  12; }
-  .pos-d{ grid-column: 4 /  6;  grid-row: 9 /  14; }
-  .pos-e{ grid-column: 8 /  11;  grid-row: 10 /  14; }
-
-  /* GSAP 动画会控制这些元素 */
-  .grid-collage figure{
-    will-change: transform, opacity;
-    cursor: pointer;
-    transition: box-shadow .3s ease;
-  }
-
-
-  /* 中心位置标识 */
-  .grid-collage figure.is-center{
-    z-index: 3;
-  }
+  .grid-collage figure{margin:0;position:relative;overflow:hidden;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.12);cursor:pointer;will-change:transform,opacity;transition:box-shadow .3s ease}
+  .grid-collage figure.is-center{z-index:3}
+  .grid-collage img{width:100%;height:100%;object-fit:cover;display:block}
+  .grid-collage figcaption{position:absolute;left:10px;bottom:10px;padding:6px 10px;font-size:12px;line-height:1;color:#fff;background:rgba(0,0,0,.45);border-radius:999px;user-select:none}
   
-  .grid-collage figure.is-center::after{
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    animation: starPulse 2s ease-in-out infinite;
+  /* set the layout of the images 
+   grid-column: <start-line> / <end-line>;
+   grid-row: the row of the image.
+  */
+  .pos-a{grid-column:2/5;grid-row:3/7}
+  .pos-b{grid-column:9/11;grid-row:2/7}
+  .pos-c{grid-column:5/9;grid-row:1/12}
+  .pos-d{grid-column:4/6;grid-row:9/14}
+  .pos-e{grid-column:8/11;grid-row:10/14}
 
-  }
-
-  @keyframes starPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    50% { transform: scale(1.2) rotate(15deg); opacity: 0.8; }
-  }
-
-
-  .image-info {
-    width: 100%;
-    text-align: center;
-  }
+  .image-info{width:100%;margin-top:64px}
   
-  .image-info h1 {
-    margin: 0 0 12px;
-    font-weight: 600;
-    font-size: clamp(20px, 3vw, 28px);
-  }
-  
-  .image-info p.tip {
-    margin: 0;
-    color: #666;
-    line-height: 1.6;
-  }
-
-
 </style>
 </head>
 <body>
-    <section class="section--a" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 4rem 6vw;"> <h1>1st Screen Section</h1></section>    
-  
-    <div class="wrap">
-
-    <div class="grid-collage">
-      <figure class="pos-a" data-id="mountain" data-name="Mountain" data-desc="壮丽的山峰景色，白雪覆盖的山顶在阳光下闪耀">
-        <img src="https://picsum.photos/id/1015/800/1200" alt="mountain">
-        <figcaption>Mountain</figcaption>
-      </figure>
-      <figure class="pos-b" data-id="dog" data-name="Dog" data-desc="可爱的小狗正在草地上玩耍，享受着温暖的阳光">
-        <img src="https://picsum.photos/id/1025/1200/800" alt="dog">
-        <figcaption>Dog</figcaption>
-      </figure>
-      <figure class="pos-c is-center" data-id="bridge" data-name="Bridge" data-desc="古老的木桥横跨河流，连接着两岸的美丽风景">
-        <img src="https://picsum.photos/id/1003/1000/1200" alt="bridge">
-        <figcaption>Bridge</figcaption>
-      </figure>
-      <figure class="pos-d" data-id="field" data-name="Field" data-desc="金色的麦田在微风中摇曳，展现着丰收的喜悦">
-        <img src="https://picsum.photos/id/1035/1200/900" alt="field">
-        <figcaption>Field</figcaption>
-      </figure>
-      <figure class="pos-e" data-id="sea" data-name="Sea" data-desc="蔚蓝的大海与天空相接，海浪轻拍着沙滩">
-        <img src="https://picsum.photos/id/1041/1100/900" alt="sea">
-        <figcaption>Sea</figcaption>
-      </figure>
-    </div>
-
-    <div class="image-info" style="margin-top: 64px;">
-        <h1>Current Image: <span id="image-name">Bridge</span></h1>
-        <p class="tip" id="image-desc">古老的木桥横跨河流，连接着两岸的美丽风景</p>
-    </div>
-</div>
-
+<section style="height:100vh;display:flex;align-items:center;justify-content:center;padding:4rem 6vw"><h1>1st Screen Section</h1></section>
+<section class="wrap">
+  <div class="grid-collage">
+    <figure class="pos-a" data-name="Mountain" data-desc="壮丽的山峰景色，白雪覆盖的山顶在阳光下闪耀">
+      <img src="https://picsum.photos/id/1015/800/1200" alt="mountain">
+      <figcaption>Mountain</figcaption>
+    </figure>
+    <figure class="pos-b" data-name="Dog" data-desc="可爱的小狗正在草地上玩耍，享受着温暖的阳光">
+      <img src="https://picsum.photos/id/1025/1200/800" alt="dog">
+      <figcaption>Dog</figcaption>
+    </figure>
+    <figure class="pos-c is-center" data-name="Bridge" data-desc="古老的木桥横跨河流，连接着两岸的美丽风景">
+      <img src="https://picsum.photos/id/1003/1000/1200" alt="bridge">
+      <figcaption>Bridge</figcaption>
+    </figure>
+    <figure class="pos-d" data-name="Field" data-desc="金色的麦田在微风中摇曳，展现着丰收的喜悦">
+      <img src="https://picsum.photos/id/1035/1200/900" alt="field">
+      <figcaption>Field</figcaption>
+    </figure>
+    <figure class="pos-e" data-name="Sea" data-desc="蔚蓝的大海与天空相接，海浪轻拍着沙滩">
+      <img src="https://picsum.photos/id/1041/1100/900" alt="sea">
+      <figcaption>Sea</figcaption>
+    </figure>
   </div>
+  <div class="image-info">
+    <h1>Current Image: <span id="image-name">Bridge</span></h1>
+    <p class="tip" id="image-desc">古老的木桥横跨河流，连接着两岸的美丽风景</p>
+  </div>
+</section>
 
-  <section class="section--a" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 4rem 6vw;"> <h1>3rd Screen Section</h1></section>    
-
-<!-- GSAP 核心库 -->
+<section style="height:100vh;display:flex;align-items:center;justify-content:center;padding:4rem 6vw"><h1>3rd Screen Section</h1></section>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<!-- GSAP ScrollTrigger 插件 -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<!-- GSAP Flip 插件 -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
-
 <script>
-  // 注册 GSAP 插件
-  gsap.registerPlugin(ScrollTrigger, Flip);
-
-  // 等待 DOM 加载完成
-  document.addEventListener('DOMContentLoaded', function() {
-    const wrap = document.querySelector('.wrap');
-    const allFigures = document.querySelectorAll('.grid-collage figure');
-    const imageNameEl = document.getElementById('image-name');
-    const imageDescEl = document.getElementById('image-desc');
-    
-    // 获取位置类名的映射
-    const getPositionClass = (figure) => {
-      const classes = Array.from(figure.classList);
-      return classes.find(cls => cls.startsWith('pos-'));
-    };
-
-    // 当前中心图片
-    let currentCenterFigure = document.querySelector('.is-center');
-    let isAnimating = false;
-
-    // 初始化：根据位置设置不同的初始动画状态
-    allFigures.forEach(figure => {
-      const posClass = getPositionClass(figure);
-      
-      if (posClass === 'pos-a') {
-        gsap.set(figure, { x: '-120%', y: '-20%' });
-      } else if (posClass === 'pos-b') {
-        gsap.set(figure, { x: '120%', y: '-20%' });
-      } else if (posClass === 'pos-d') {
-        gsap.set(figure, { x: '-100%', y: '50%'});
-      } else if (posClass === 'pos-e') {
-        gsap.set(figure, { x: '100%', y: '50%'});
-      }
-    });
-
-    // 创建滚动动画时间线
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: wrap,
-        start: 'top 80%',
-        end: 'top 20%',
-        scrub: 1.2,
-        // markers: true,
-      }
-    });
-
-    // 为每个图片添加滚动动画
-    allFigures.forEach((figure, index) => {
-      tl.to(figure, {
-        x: '0%',
-        y: '0%',
-        ease: 'sine.out',
-        duration: 2.5
-      }, index * 0.1);
-    });
-
-    // 更新图片信息
-    function updateImageInfo(figure) {
-      const name = figure.dataset.name;
-      const desc = figure.dataset.desc;
-      
-      // 直接更新文本内容
-      imageNameEl.textContent = name;
-      imageDescEl.textContent = desc;
-    }
-
-    // 点击切换功能
-    allFigures.forEach(figure => {
-      figure.addEventListener('click', function() {
-        // 如果点击的是当前中心图片，或正在动画中，则不执行
-        if (figure === currentCenterFigure || isAnimating) return;
-
-        isAnimating = true;
-
-        // 重置所有图片的 scale，清除 hover 效果
-        allFigures.forEach(fig => {
-          gsap.set(fig, { scale: 1 });
-        });
-
-        // 使用 Flip 插件记录当前状态
-        const state = Flip.getState(allFigures);
-
-        // 获取两个元素的位置类
-        const clickedPosClass = getPositionClass(figure);
-        const centerPosClass = getPositionClass(currentCenterFigure);
-
-        // 交换位置类
-        figure.classList.remove(clickedPosClass);
-        figure.classList.add(centerPosClass);
-        
-        currentCenterFigure.classList.remove(centerPosClass);
-        currentCenterFigure.classList.add(clickedPosClass);
-
-        // 交换中心标识
-        currentCenterFigure.classList.remove('is-center');
-        figure.classList.add('is-center');
-
-        // 使用 Flip 插件创建平滑过渡
-        Flip.from(state, {
-          duration: 0.4,
-          ease: 'power3.inOut',
-        //   absolute: true,
-          scale: true,
-          onComplete: () => {
-            isAnimating = false;
-          }
-        });
-
-        // 更新当前中心图片引用
-        currentCenterFigure = figure;
-
-        // 更新图片信息
-        updateImageInfo(figure);
-      });
-
-      figure.addEventListener('mouseenter', function() {
-        if(!isAnimating) {
-            gsap.to(figure, {
-            scale: 1.15,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-            }
-      });
-
-      figure.addEventListener('mouseleave', function() {
-        if(!isAnimating) {
-        gsap.to(figure, {
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out'
-        });
-        }
-      });
-     
-    });
+gsap.registerPlugin(ScrollTrigger,Flip);
+document.addEventListener('DOMContentLoaded',function(){
+  const wrap=document.querySelector('.wrap'),
+        figs=document.querySelectorAll('.grid-collage figure'),
+        nameEl=document.getElementById('image-name'),
+        descEl=document.getElementById('image-desc'),
+        getPos=f=>Array.from(f.classList).find(c=>c.startsWith('pos-'));
+  let center=document.querySelector('.is-center'),anim=false;
+  
+  figs.forEach(f=>{
+    // set images positions except the center image.
+    const p=getPos(f),pos={a:{x:'-120%',y:'-20%'},b:{x:'120%',y:'-20%'},d:{x:'-100%',y:'50%'},e:{x:'100%',y:'50%'}}[p.slice(-1)];
+    if(pos)gsap.set(f,pos);
   });
+  
+  const tl=gsap.timeline({scrollTrigger:{trigger:wrap,start:'top 80%',end:'top 20%',scrub:1.2}});
+  //each images move to the center position.
+  figs.forEach((f,i)=>tl.to(f,{x:'0%',y:'0%',ease:'sine.out',duration:2.5},i*0.1));
+  
+  //when user click the image, the image will move to the center position.
+  figs.forEach(f=>{
+    f.addEventListener('click',function(){
+      if(f===center||anim)return;
+      anim=true;
+      figs.forEach(fig=>gsap.set(fig,{scale:1}));
+      const state=Flip.getState(figs),cp=getPos(f),cep=getPos(center);
+      f.classList.replace(cp,cep);
+      center.classList.replace(cep,cp);
+      center.classList.remove('is-center');
+      f.classList.add('is-center');
+      Flip.from(state,{duration:.4,ease:'power3.inOut',scale:true,onComplete:()=>anim=false});
+      center=f;
+      nameEl.textContent=f.dataset.name;
+      descEl.textContent=f.dataset.desc;
+    });
+
+    // hover effect
+    f.addEventListener('mouseenter',()=>!anim&&gsap.to(f,{scale:1.15,duration:.3,ease:'power2.out'}));
+    f.addEventListener('mouseleave',()=>!anim&&gsap.to(f,{scale:1,duration:.3,ease:'power2.out'}));
+  });
+});
 </script>
 </body>
 </html>
