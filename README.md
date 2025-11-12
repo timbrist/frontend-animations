@@ -15,3 +15,14 @@ the difficult parts:
 </p>
 
 
+# Collage Animation
+Actually, I like the layout of the collage, but I need some animations in real production to make it looks serious. 
+
+this animation we need to consider 3 parts:
+1. set the image position and scroll to different position.
+2. click different image other than the center one, should use the GSAP flip plugin.
+3. since we define the image position and size, we need to use the GSAP scale animation.
+
+<p align="center">
+  <img src="images/collage animation.gif" alt="Video">
+</p>
