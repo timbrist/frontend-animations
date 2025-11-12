@@ -90,21 +90,19 @@
     transition: box-shadow .3s ease;
   }
 
+
   /* 中心位置标识 */
   .grid-collage figure.is-center{
     z-index: 3;
   }
   
   .grid-collage figure.is-center::after{
-    content: '★';
     position: absolute;
     top: 10px;
     right: 10px;
     font-size: 24px;
-    color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
     animation: starPulse 2s ease-in-out infinite;
-    z-index: 10;
+
   }
 
   @keyframes starPulse {
@@ -271,6 +269,11 @@
 
         isAnimating = true;
 
+        // 重置所有图片的 scale，清除 hover 效果
+        allFigures.forEach(fig => {
+          gsap.set(fig, { scale: 1 });
+        });
+
         // 使用 Flip 插件记录当前状态
         const state = Flip.getState(allFigures);
 
@@ -306,6 +309,25 @@
         updateImageInfo(figure);
       });
 
+      figure.addEventListener('mouseenter', function() {
+        if(!isAnimating) {
+            gsap.to(figure, {
+            scale: 1.15,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            }
+      });
+
+      figure.addEventListener('mouseleave', function() {
+        if(!isAnimating) {
+        gsap.to(figure, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+        }
+      });
      
     });
   });
