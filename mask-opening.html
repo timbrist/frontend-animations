@@ -1,73 +1,137 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Mask Opening Animation</title>
-
-  <style>   
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hero Mask Intro — Chinese Hand Pulled Noodle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d0f12; --fg:#f5f5f7; --muted:#b0b2b8; --brand:#eab308;
+      --pad: clamp(16px, 4vw, 48px);
     }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--fg); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; overflow-x:hidden}
+    .container{width:min(1200px,92vw); margin:0 auto}
 
-    .hero{
-      position:relative; 
-      min-height:100vh; 
-      display:grid; 
-      place-items:center; 
-      overflow:hidden; 
-      background:#000 url('https://picsum.photos/1920/1080') center/cover no-repeat;
+    /* -------- HERO -------- */
+    .hero{position:relative; min-height:100vh; display:grid; place-items:center; overflow:hidden; background:#000;}
+    .hero .parallax{position:absolute; inset:-20vh -10vw; pointer-events:none}
+    .blob{position:absolute; width:42vmax; height:42vmax; border-radius:24px; filter:blur(24px); opacity:.8}
+    .blob.b1{top:10%; left:8%; background:radial-gradient(ellipse at 30% 30%, rgba(255,179,0,.35), transparent 60%)}
+    .blob.b2{right:6%; bottom:6%; background:radial-gradient(ellipse at 70% 70%, rgba(255,64,128,.35), transparent 60%)}
+
+    /* SVG mask area */
+    .mask-wrap{position:absolute; inset:0; width:100%; height:100%;}
+    .hero-svg{width:100%; height:100%; display:block}
+    .bg-rect{fill:url(#bg-grad)}
+    .mask-text{font-family:'DM Serif Display', ui-serif, Georgia, 'Times New Roman', serif; font-weight:400;
+      font-size: clamp(28px, 9vw, 120px); letter-spacing: 0em}
+
+    /* subtitle that fades after mask animation */
+    .subtitle{position:absolute; left:50%; bottom: clamp(24px, 6vh, 72px); transform:translateX(-50%);
+      color:var(--muted); text-align:center; font-size:clamp(14px, 2.4vw, 18px); opacity:0}
+
+    /* soft scroll cue */
+    .scroll-cue{position:absolute; left:50%; bottom:18px; transform:translateX(-50%); font-size:12px; letter-spacing:.2em; color:#9aa0a6; opacity:.85}
+    .scroll-cue::after{content:""; display:block; margin:8px auto 0; width:2px; height:28px; background:#7c8089; border-radius:2px;}
+
+    /* next section for soft scrolling feel */
+    .section{position:relative; padding: calc(var(--pad)*2) 0}
+    .eyebrow{font-size:.9rem; color:#9aa0a6; letter-spacing:.2em; text-transform:uppercase; margin-bottom:10px}
+    h2{font: 700 clamp(24px, 5vw, 48px)/1.08 Inter, system-ui; margin:0 0 12px}
+    .lead{color:#d0d3d8}
+    .ph{height:340px; border-radius:16px; background:linear-gradient(135deg, #171a1f, #101216); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05)}
+
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none !important; transition:none !important}
     }
-
-    .mask-wrap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      display: grid;
-      place-items: center;
-    }
-
-    .mask-text {
-      text-align: center;
-      color: transparent;
-      background: url('https://picsum.photos/1920/1080') center/cover no-repeat;
-      background-clip: text;
-      -webkit-background-clip: text;
-      padding: 2rem;
-    }
-
-    .mask-text h1 {
-      font-size: clamp(2rem, 8vw, 5rem);
-      font-weight: bold;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .mask-text p {
-      font-size: clamp(1rem, 3vw, 1.5rem);
-      line-height: 1.6;
-    }
-
   </style>
-
 </head>
-
 <body>
-    <section class="hero">
+  <section class="hero" id="hero">
 
-        <div class="mask-wrap">
-            <div class="mask-text">
-                <h1>Chinese Hand Pulled Noodle</h1>
-                <p>Freshly made noodles • 5‑year perfected broth • Smooth, bouncy bite</p>
-            </div>
-        </div>
-    </section>
-</body>
-</body>
 
+    <!-- Masked title -->
+    <div class="mask-wrap">
+      <svg class="hero-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-labelledby="title">
+        <title>Chinese Hand Pulled Noodle — Mask Intro</title>
+        <defs>
+          <!-- mask: white shows, black hides -->
+          <mask id="title-mask" maskUnits="userSpaceOnUse">
+            <rect width="1600" height="900" fill="black"/>
+            <g id="maskGroup" transform="translate(800,450)">
+              <text id="maskText"
+                x="0" y="0"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                class="mask-text"
+                fill="white"
+              >Chinese Hand Pulled Noodle</text>
+            </g>
+          </mask>
+        </defs>
+
+        <!-- 背景图通过 mask 显示：只有白色文字区域才能看到 -->
+        <g mask="url(#title-mask)">
+          <!-- 背景图片 -->
+          <image href="https://picsum.photos/1920/1080" x="0" y="0" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/>
+        </g>
+      </svg>
+      <div class="subtitle" id="subtitle">Freshly made noodles • 5‑year perfected broth • Smooth, bouncy bite</div>
+    </div>
+
+
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">Next Section</div>
+      <h2>柔和滚动感（Parallax & 轻微位移）</h2>
+      <p class="lead">继续下滑时，背景色块缓慢视差，副本轻度上移与淡入，营造温和的滚动质感。</p>
+      <div class="ph"></div>
+    </div>
+  </section>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+
+
+    // Entrance timeline
+    const tl = gsap.timeline({ 
+      defaults:{ ease:'power3.out' }, 
+      onComplete(){ sessionStorage.setItem('heroPlayed','1'); } 
+    });
+
+    // mask text & group
+    const maskText = document.getElementById('maskText');
+    const maskGroup = document.getElementById('maskGroup');
+
+      // 起始状态：文字极小，几乎看不见背景图（完全被黑色遮盖）
+      gsap.set(maskGroup, { scale: 0.75, transformOrigin:'50% 50%' });
+      gsap.set(maskText, { opacity: 1 });
+
+      // 2.5秒后，文字从极小不断放大，背景图片逐渐显示
+      tl.to(maskGroup, { 
+          scale: 10,  // 放大到很大，让整个背景都显示出来
+          duration: 3.5, 
+          ease: 'power2.inOut',
+          delay: 2.5  // 等待2.5秒后开始放大
+        }, 0)
+        .to('#subtitle', { opacity: 1, y: -6, duration: 0.8 }, '-=1.2');
+
+
+    // 下一区块文字的温柔进场
+    gsap.from('.lead', { y:24, opacity:0, duration:.6, ease:'power2.out',
+      scrollTrigger:{ trigger:'.lead', start:'top 85%', once:true }
+    });
+  </script>
+</body>
 </html>
