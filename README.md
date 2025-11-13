@@ -26,3 +26,14 @@ this animation we need to consider 3 parts:
 <p align="center">
   <img src="images/collage animation.gif" alt="Video">
 </p>
+
+
+# Mask Animation
+Usually this is used at the first entry of the webpage. 
+the scale arugument will be different base on the text and screen. 
+use the meta tag to indicate the content="width=device-width, initial-scale=1" is important for the mobile screen. 
+
+
+<p align="center">
+  <img src="images/mask animation.gif" alt="Video">
+</p>
