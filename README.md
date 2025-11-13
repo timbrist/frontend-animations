@@ -37,3 +37,12 @@ use the meta tag to indicate the content="width=device-width, initial-scale=1" i
 <p align="center">
   <img src="images/mask animation.gif" alt="Video">
 </p>
+
+
+
+# Carousel onDrag Animation
+very often I saw this animation on Figma design. 
+<p align="center">
+  <img src="images/carousel ondrag.gif" alt="Video">
+</p>
+

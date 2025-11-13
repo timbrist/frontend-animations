@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel ondrag animation</title>
+</head>
+    <style>
+        /* basic css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .carousel-section{
+            width: 100%;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .carousel-container {
+            width: 90%;
+            max-width: 800px;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .carousel-item {
+            position: absolute;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            overflow: hidden;
+            user-select: none;
+            aspect-ratio: 1 / 1;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .indicator.active {
+            background: white;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .navigation {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #333;
+            z-index: 10;
+            animation: fadeOut 4s ease-in-out forwards;
+        }
+    
+    </style>
+<body>
+
+    <section class="carousel-section">
+    <div class="carousel-container">
+        <div class="carousel-wrapper">
+
+
+            <div class="carousel-item" data-index="2">
+                <img src="images/23.png" alt="carousel-item" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop';">
+            </div>
+            <div class="carousel-item" data-index="1">
+                <img src="images/22.png" alt="carousel-item" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=500&fit=crop';">
+            </div>
+            <div class="carousel-item" data-index="0">
+                <img src="images/21.png" alt="carousel-item" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&h=500&fit=crop';">
+            </div>
+            
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn prev">‹</button>
+            <button class="nav-btn next">›</button>
+        </div>
+
+        <div class="indicators">
+            <div class="indicator active" data-index="0"></div>
+            <div class="indicator" data-index="1"></div>
+            <div class="indicator" data-index="2"></div>
+        </div>
+    </div>
+    </section>
+
+    <!-- GSAP 核心库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- GSAP Draggable 插件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    
+    <script>
+        const items = document.querySelectorAll('.carousel-item');
+        const wrapper = document.querySelector('.carousel-wrapper');
+        const indicators = document.querySelectorAll('.indicator');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+        
+        let currentIndex = 0;
+        const totalItems = items.length;
+        const threshold = 100; // 拖拽阈值（像素）
+        let isDragging = false;
+        let dragInstance = null;
+
+        // 初始化位置
+        function initPositions() {
+            items.forEach((item, index) => {
+                if (index === currentIndex) {
+                    gsap.set(item, { x: 0, opacity: 1, scale: 1, rotation: 0, zIndex: 2 });
+                } else if (index > currentIndex) {
+                    gsap.set(item, { x: '100%', opacity: 0, scale: 0.8, rotation: 90, zIndex: 1 });
+                } else {
+                    gsap.set(item, { x: '-100%', opacity: 0, scale: 0.8, rotation: -90, zIndex: 1 });
+                }
+            });
+        }
+
+        // 切换到指定索引
+        function goToSlide(newIndex, direction = 1) {
+            if (newIndex === currentIndex || isDragging) return;
+
+            const currentItem = items[currentIndex];
+            const newItem = items[newIndex];
+
+            // 更新指示器
+            indicators[currentIndex].classList.remove('active');
+            indicators[newIndex].classList.add('active');
+
+            // 动画时间线
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    // 重置其他项的位置
+                    items.forEach((item, index) => {
+                        if (index !== newIndex) {
+                            gsap.set(item, { 
+                                x: index > newIndex ? '100%' : '-100%', 
+                                opacity: 0, 
+                                scale: 0.8,
+                                rotation: index > newIndex ? 90 : -90,
+                                zIndex: 1
+                            });
+                        }
+                    });
+                }
+            });
+
+            if (direction > 0) {
+                // 向左滑动（下一张）- 90度旋转滚入
+                gsap.set(newItem, { zIndex: 2 });
+                tl.to(currentItem, {
+                    x: '-100%',
+                    opacity: 0,
+                    scale: 0.8,
+                    rotation: -90,
+                    duration: 0.6,
+                    ease: 'power2.inOut'
+                }, 0)
+                .fromTo(newItem, 
+                    { x: '100%', opacity: 0, scale: 0.8, rotation: 90 },
+                    { x: 0, opacity: 1, scale: 1, rotation: 0, duration: 0.6, ease: 'power2.inOut' },
+                    0
+                );
+            } else {
+                // 向右滑动（上一张）- -90度旋转滚入
+                gsap.set(newItem, { zIndex: 2 });
+                tl.to(currentItem, {
+                    x: '100%',
+                    opacity: 0,
+                    scale: 0.8,
+                    rotation: 90,
+                    duration: 0.6,
+                    ease: 'power2.inOut'
+                }, 0)
+                .fromTo(newItem,
+                    { x: '-100%', opacity: 0, scale: 0.8, rotation: -90 },
+                    { x: 0, opacity: 1, scale: 1, rotation: 0, duration: 0.6, ease: 'power2.inOut' },
+                    0
+                );
+            }
+
+            currentIndex = newIndex;
+        }
+
+        // 下一张
+        function nextSlide() {
+            const newIndex = (currentIndex + 1) % totalItems;
+            goToSlide(newIndex, 1);
+        }
+
+        // 上一张
+        function prevSlide() {
+            const newIndex = (currentIndex - 1 + totalItems) % totalItems;
+            goToSlide(newIndex, -1);
+        }
+
+        // GSAP Draggable 设置 - 为每个 item 创建拖拽实例
+        let startX = 0;
+        let dragDistance = 0;
+
+        items.forEach((item, index) => {
+            Draggable.create(item, {
+                type: 'x',
+                trigger: wrapper, // 使用 wrapper 作为触发区域
+                onPress: function() {
+                    if (index !== currentIndex) return;
+                    isDragging = true;
+                    wrapper.classList.add('dragging');
+                    startX = this.x;
+                },
+                onDrag: function() {
+                    if (index !== currentIndex) return;
+                    
+                    dragDistance = this.x - startX;
+                    const progress = Math.min(Math.abs(dragDistance) / wrapper.offsetWidth, 1);
+                    
+                    // 当前项跟随拖拽变化（旋转、透明度、缩放）
+                    if (dragDistance < 0) {
+                        // 向左拖
+                        gsap.set(item, { 
+                            rotation: -progress * 90,
+                            opacity: 1 - progress,
+                            scale: 1 - (progress * 0.2)
+                        });
+                        
+                        // 显示下一张，从右边滚入
+                        const nextIndex = (currentIndex + 1) % totalItems;
+                        const nextItem = items[nextIndex];
+                        
+                        gsap.set(nextItem, {
+                            x: wrapper.offsetWidth * (1 - progress),
+                            opacity: progress,
+                            scale: 0.8 + (progress * 0.2),
+                            rotation: 90 * (1 - progress),
+                            zIndex: 1
+                        });
+                        
+                        // 隐藏上一张
+                        const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
+                        gsap.set(items[prevIndex], {
+                            x: -wrapper.offsetWidth,
+                            opacity: 0,
+                            scale: 0.8,
+                            rotation: -90
+                        });
+                    } else if (dragDistance > 0) {
+                        // 向右拖
+                        gsap.set(item, { 
+                            rotation: progress * 90,
+                            opacity: 1 - progress,
+                            scale: 1 - (progress * 0.2)
+                        });
+                        
+                        // 显示上一张，从左边滚入
+                        const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
+                        const prevItem = items[prevIndex];
+                        
+                        gsap.set(prevItem, {
+                            x: -wrapper.offsetWidth * (1 - progress),
+                            opacity: progress,
+                            scale: 0.8 + (progress * 0.2),
+                            rotation: -90 * (1 - progress),
+                            zIndex: 1
+                        });
+                        
+                        // 隐藏下一张
+                        const nextIndex = (currentIndex + 1) % totalItems;
+                        gsap.set(items[nextIndex], {
+                            x: wrapper.offsetWidth,
+                            opacity: 0,
+                            scale: 0.8,
+                            rotation: 90
+                        });
+                    } else {
+                        // 没有拖拽或回到中心
+                        gsap.set(item, { 
+                            rotation: 0,
+                            opacity: 1,
+                            scale: 1
+                        });
+                    }
+                },
+                onRelease: function() {
+                    if (index !== currentIndex) return;
+                    
+                    wrapper.classList.remove('dragging');
+                    isDragging = false;
+                    
+                    // 判断是否超过阈值
+                    if (Math.abs(dragDistance) > threshold) {
+                        if (dragDistance < 0) {
+                            // 向左拖，显示下一张
+                            nextSlide();
+                        } else {
+                            // 向右拖，显示上一张
+                            prevSlide();
+                        }
+                    } else {
+                        // 未超过阈值，恢复原位
+                        gsap.to(item, {
+                            x: 0,
+                            rotation: 0,
+                            opacity: 1,
+                            scale: 1,
+                            duration: 0.8,
+                            ease: 'power2.out'
+                        });
+                        
+                        // 隐藏相邻项
+                        if (dragDistance < 0) {
+                            const nextIndex = (currentIndex + 1) % totalItems;
+                            gsap.to(items[nextIndex], {
+                                x: wrapper.offsetWidth,
+                                opacity: 0,
+                                scale: 0.8,
+                                rotation: 90,
+                                duration: 0.8,
+                                ease: 'power2.out'
+                            });
+                        } else if (dragDistance > 0) {
+                            const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
+                            gsap.to(items[prevIndex], {
+                                x: -wrapper.offsetWidth,
+                                opacity: 0,
+                                scale: 0.8,
+                                rotation: -90,
+                                duration: 0.8,
+                                ease: 'power2.out'
+                            });
+                        }
+                    }
+                    
+                    dragDistance = 0;
+                }
+            });
+        });
+
+        // 按钮事件
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        // 指示器点击事件
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                const targetIndex = parseInt(indicator.dataset.index);
+                const direction = targetIndex > currentIndex ? 1 : -1;
+                goToSlide(targetIndex, direction);
+            });
+        });
+
+        // 初始化
+        initPositions();
+
+    </script>
+</body>
+</html>
